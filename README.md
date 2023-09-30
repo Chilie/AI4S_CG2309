@@ -57,7 +57,22 @@ python3 test_2d.py
 
 For this code, we require the following pytorch version, please follow the code to install the environment
 ```python
+cd GIT # enter the folder
+conda create -n git python=3.7
+conda activate git # activate the environment
 pip install torch==1.10.0+cu111 torchvision==0.11.0+cu111 torchaudio==0.10.0 -f https://download.pytorch.org/whl/torch_stable.html
+pip3 install -r requirements.txt # install the dependency 
 ```
 
+# The training data
+
+The training data is hosted in baidunetdisk, you can download these files at https://pan.baidu.com/s/1tDOZw2uylySBs3fKbR4Ofw?pwd=ejnp 
+Note that the folder structure should be hold and put it in the GIT folder.
 + Training code, run the following 
+```python
+python3 GIT_poisson.py
+```
++ Test code, run the following
+```python
+python3 eval_poisson_GIT.py
+```
