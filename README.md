@@ -53,3 +53,11 @@ python3 main_with_time_d2.py
 python3 test_2d.py
 ```
 
+## Operator learning code
+
+For this code, we require the following pytorch version, please follow the code to install the environment
+```python
+pip install torch==1.10.0+cu111 torchvision==0.11.0+cu111 torchaudio==0.10.0 -f https://download.pytorch.org/whl/torch_stable.html
+```
+
++ Training code, run the following 

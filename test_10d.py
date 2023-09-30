@@ -222,6 +222,14 @@ class PhysicsInformedNN():
         f = f.detach()
         return u, f
 
+    def predict_u(self, X):
+        X = torch.abs(X)-0.5*torch.floor(2*torch.abs(X))
+        x = X.clone().detach().requires_grad_(True)
+        self.dnn.eval()
+        u = self.net_u(x)
+        u = u.detach()
+        return u
+
 nu = 4
 
 # Test path
@@ -261,7 +269,7 @@ model.dnn.eval()
 
 
 
-
+# with torch.no_grad():
 u_pred, f_pred = model.predict(X_star)
 
 error_u = torch.linalg.norm(u_star-u_pred,2)/torch.linalg.norm(u_star,2)
@@ -270,11 +278,32 @@ Error = torch.abs(data.flatten()[:,None] - u_pred)
 sys.stdout = Logger(path_base+'/results.txt')
 print(path)
 print(
-    'Test_error: %.5e' % (error_u.item())
+    'Test_error (Rand. 30000): %.5e' % (error_u.item())
 )
 
 # in the following, we do the visulaization
 # EVALUATION code
+
+left_end = 0
+right_end = 1.0
+N_part = 4        
+input_samp = [torch.linspace(left_end,right_end,N_part).to(device) for x in range(N_dim)]
+input_ind = torch.meshgrid(*input_samp)
+X_star_4 = torch.stack([ele.flatten() for ele in input_ind],-1)
+data_4 = -torch.prod(torch.sin(nu*math.pi*X_star_4),dim=1,keepdim=True)
+u_star_4 = data_4.flatten()[:,None] 
+
+with torch.no_grad():
+        u_pred_4 = model.predict_u(X_star_4)
+
+error_u = torch.linalg.norm(u_star_4-u_pred_4,2)/torch.linalg.norm(u_star_4,2)
+# print('Error u: %e' % (error_u))                     
+Error = torch.abs(data.flatten()[:,None] - u_pred)
+sys.stdout = Logger(path_base+'/results.txt')
+print(path)
+print(
+    'Test_error (Meshgrid 4^10): %.5e' % (error_u.item())
+)
 
 # EVALUATION code
 left_end = 0
@@ -294,7 +323,7 @@ data_2 = reduce((lambda x,y: torch.sin(nu*math.pi*x)*torch.sin(nu*math.pi*y)),in
 data_2 = -1*data_2
 u_star_2 = data_2.flatten()[:,None]   
 
-u_pred_2, f_pred_2 = model.predict(X_star_2)
+u_pred_2 = model.predict_u(X_star_2)
 
 error_u = torch.linalg.norm(u_star_2-u_pred_2,2)/torch.linalg.norm(u_star_2,2)
 sys.stdout = Logger(path_base+'/results.txt')
