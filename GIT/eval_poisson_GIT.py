@@ -41,7 +41,7 @@ import statistics
 parser = argparse.ArgumentParser()
 parser.add_argument('--c_width', type=int, default=32, help='')
 parser.add_argument('--d_width', type=int, default=512)
-parser.add_argument('--M',  type=int, default=2500, help="number of dataset")
+parser.add_argument('--M',  type=int, default=1250, help="number of dataset")
 parser.add_argument('--dim_PCA', type=int, default=200)
 parser.add_argument('--eps', type=float, default=1e-6)
 parser.add_argument('--noliz', type=bool, default=True)
@@ -68,7 +68,7 @@ step_size = 500
 gamma = 0.5
 
 # load data
-prefix = "/home/jcy02/wang/dataset/Poisson/"
+prefix = "./dataset/Poisson/"
 data = mat73.loadmat(prefix + "Poisson_Triangular_2000.mat")
 
 inputs = data['f']
@@ -86,8 +86,6 @@ gridx = x.reshape(1, N).repeat(N, axis=0)
 gridy = y.reshape(N, 1).repeat(N, axis=1)
 f = -32 * np.pi**2 * np.multiply(np.sin(4 * np.pi * gridx),  np.sin(4 * np.pi * gridy))
 u = -np.multiply(np.sin(4 * np.pi * gridx), np.sin(4 * np.pi * gridy))
-u = u / 1e6
-f = f/1e6
 print('f ',f.shape)
 print('u ',u.shape)
 print(f[0, 0])
@@ -203,9 +201,9 @@ for ep in range(num_epoches):
         
         # y_test = y_test.detach().cpu().numpy()
         y_test_pred = np.matmul(Ug, out.T)
-        norms = np.linalg.norm(test_outputs, axis=1)
+        norms = np.linalg.norm(test_outputs, axis=0)
         error = test_outputs - y_test_pred
-        relative_error = np.linalg.norm(error, axis=1) / norms
+        relative_error = np.linalg.norm(error, axis=0) / norms
         average_relative_error = np.sum(relative_error)
 
     
@@ -213,12 +211,12 @@ for ep in range(num_epoches):
         print(f"Average Relative Error of original PCA: {ep } {average_relative_error: .6e}")
         
     if cfg.state=='eval':
-        output = np.matmul(Ug, output.T).T.reshape(-1, 1)
+        output = np.matmul(Ug, out.T).T.reshape(-1, 1)
         yb = y_test_pred.reshape(-1)
         ye = output.reshape(-1)
-        a = torch.matmul(ye.T, yb) / torch.matmul(ye.T, ye)
-        error = torch.norm(yb - a * ye) / torch.norm(yb)
-        savemat('predictions/GIT/GIT_final.mat', {'predictions': ye.detach().cpu().numpy()})
+#        a = torch.matmul(ye.T, yb) / torch.matmul(ye.T, ye)
+#        error = torch.norm(yb - a * ye) / torch.norm(yb)
+        savemat('predictions/GIT/GIT_final.mat', {'predictions': ye})
         
 
 

@@ -18,7 +18,7 @@ import statistics
 parser = argparse.ArgumentParser()
 parser.add_argument('--c_width', type=int, default=32, help='')
 parser.add_argument('--d_width', type=int, default=512)
-parser.add_argument('--M',  type=int, default=2500, help="number of dataset")
+parser.add_argument('--M',  type=int, default=1250, help="number of dataset")
 parser.add_argument('--dim_PCA', type=int, default=200)
 parser.add_argument('--eps', type=float, default=1e-6)
 parser.add_argument('--noliz', type=bool, default=True)
